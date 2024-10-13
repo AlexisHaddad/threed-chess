@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { Square } from "./Square";
 import { ChessPiece } from "./ChessPiece";
+import { AnimatedCamera } from "./AnimatedCamera";
 
 const ChessBoard = () => {
   const boardSize = 8;
+  const fixedRef = useRef(false);
 
   // Create the chessboard grid with alternating colors
   const chessboard = [];
@@ -40,18 +42,24 @@ const ChessBoard = () => {
   }
 
   return (
-    <Canvas shadows camera={{ position: [4, 8, 8], fov: 50 }}>
-      {/* Ambient light and directional light for the scene */}
+    <Canvas shadows>
       <ambientLight intensity={0.5} />
       <directionalLight position={[0, 10, 0]} intensity={0.8} castShadow />
 
-      {/* OrbitControls for interactive camera movement */}
-      <OrbitControls />
+      <AnimatedCamera fixedRef={fixedRef} />
 
-      {/* Render the chessboard */}
+      {!fixedRef.current && (
+        <OrbitControls
+          enablePan={false}
+          enableZoom={false}
+          enableRotate={false}
+        />
+      )}
+
+      {/* <OrbitControls /> */}
+
       {chessboard}
 
-      {/* Render the pieces */}
       {pieces}
     </Canvas>
   );
