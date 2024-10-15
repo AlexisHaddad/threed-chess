@@ -7,10 +7,11 @@ interface AnimatedCameraProps {
   fixedRef: MutableRefObject<boolean>;
 }
 
+const CAMERA_OFFSET = 4;
+
 // Animated camera component
 export const AnimatedCamera = ({ fixedRef }: AnimatedCameraProps) => {
   const cameraRef = useRef<PerspectiveCameraRef | null>(null);
-  console.log("AnimatedCamera");
 
   // Animation: Rotating around the board
   useFrame((state) => {
@@ -21,13 +22,13 @@ export const AnimatedCamera = ({ fixedRef }: AnimatedCameraProps) => {
       // Rotate the camera around the board (simple circular motion)
       if (elapsedTime < 3) {
         // Rotate the camera around the board for 3 seconds
-        const radius = 12;
+        const radius = 10;
         const angle = elapsedTime * Math.PI * 0.5; // 90 degrees in 3 seconds
-        const x = radius * Math.cos(angle);
-        const z = radius * Math.sin(angle);
-        console.log("x", x, "z", z);
+        const x = CAMERA_OFFSET + radius * Math.cos(angle);
+        const z = CAMERA_OFFSET + radius * Math.sin(angle);
+
         cameraRef.current.position.x = x;
-        cameraRef.current.position.y = angle;
+        cameraRef.current.position.y = elapsedTime * 4;
         cameraRef.current.position.z = z;
         cameraRef.current.lookAt(4, 0, 4); // Look at the center of the board
       } else {

@@ -13,7 +13,7 @@ const ChessBoard = () => {
   const chessboard = [];
   for (let row = 0; row < boardSize; row++) {
     for (let col = 0; col < boardSize; col++) {
-      const color = (row + col) % 2 === 0 ? "white" : "black";
+      const color = (row + col) % 2 === 0 ? "white" : "green";
       chessboard.push(
         <Square key={`${row}-${col}`} position={[col, 0, row]} color={color} />
       );
@@ -35,28 +35,24 @@ const ChessBoard = () => {
       <ChessPiece
         key={`b-pawn-${col}`}
         position={[col, 0.5, 6]}
-        color="black"
+        color="gray"
       />,
-      <ChessPiece key={`b-${col}`} position={[col, 0.5, 7]} color="black" />
+      <ChessPiece key={`b-${col}`} position={[col, 0.5, 7]} color="gray" />
     );
   }
 
   return (
     <Canvas shadows>
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[0, 10, 0]} intensity={0.8} castShadow />
+      <ambientLight intensity={0.7} />
+      <directionalLight position={[0, 10, 0]} intensity={1} castShadow />
 
       <AnimatedCamera fixedRef={fixedRef} />
 
-      {!fixedRef.current && (
-        <OrbitControls
-          enablePan={false}
-          enableZoom={false}
-          enableRotate={false}
-        />
-      )}
-
-      {/* <OrbitControls /> */}
+      <OrbitControls
+        enablePan={false}
+        enableZoom={false}
+        enableRotate={false}
+      />
 
       {chessboard}
 
