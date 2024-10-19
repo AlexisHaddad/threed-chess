@@ -23,8 +23,9 @@ const ChessBoard = () => {
   const [chess] = useState(new Chess());
   const [board, setBoard] = useState(chess.board());
   const [turn, setTurn] = useState(chess.turn());
-  const inCheck = useMemo(() => chess.inCheck(), [chess]);
-  const isCheckmate = useMemo(() => chess.isCheckmate(), [chess]);
+  const [inCheck, setInCheck] = useState(chess.inCheck());
+  const [isCheckmate, setIsCheckmate] = useState(chess.isCheckmate());
+  const [history, setHistory] = useState(chess.history());
 
   const possibleMoves = useMemo(
     () => chess.moves({ verbose: true, square: selectedPiece?.square }),
@@ -47,6 +48,9 @@ const ChessBoard = () => {
           chess.move(move.san);
           setBoard(chess.board());
           setTurn(chess.turn());
+          setInCheck(chess.inCheck());
+          setIsCheckmate(chess.isCheckmate());
+          setHistory(chess.history());
           setSelectedPiece(null);
         }
       }
@@ -60,10 +64,23 @@ const ChessBoard = () => {
         <Text fontSize={0.5} anchorX="center" anchorY="middle">
           {turn === "w" ? "White's turn" : "Black's turn"}
         </Text>
-        <Text fontSize={0.5} anchorX="center" anchorY="middle">
-          {isCheckmate ? "Checkmate!" : inCheck ? "Check!" : ""}
+      </Billboard>
+      <Billboard follow position={[4, 6.5, 3]}>
+        <Text fontSize={0.2} anchorX="center" anchorY="middle">
+          {history
+            .map((move, index) =>
+              index % 2 === 0 ? `${index / 2 + 1}. ${move}` : move
+            )
+            .join(" ")}
         </Text>
       </Billboard>
+      {(isCheckmate || inCheck) && (
+        <Billboard follow position={[4, 5.5, 3]}>
+          <Text fontSize={0.5} anchorX="center" anchorY="middle">
+            {isCheckmate ? "Checkmate!" : inCheck ? "Check!" : ""}
+          </Text>
+        </Billboard>
+      )}
 
       {board.map((row, rowIndex) =>
         row.map((piece, colIndex) => (
