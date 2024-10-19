@@ -12,7 +12,7 @@ const PIECE_COLORS: Record<Color, string> = {
 const INDEX_TO_COLOMN = ["a", "b", "c", "d", "e", "f", "g", "h"];
 
 const getToFromColAndRow = (col: number, row: number) =>
-  `${INDEX_TO_COLOMN[col]}${row + 1}`;
+  `${INDEX_TO_COLOMN[col]}${8 - row}`;
 
 const ChessBoard = () => {
   const [selectedPiece, setSelectedPiece] = useState<{
@@ -22,12 +22,9 @@ const ChessBoard = () => {
   } | null>(null);
   const [chess] = useState(new Chess());
   const [board, setBoard] = useState(chess.board());
-  const invertedBoard = useMemo(() => board.slice().reverse(), [board]);
   const [turn, setTurn] = useState(chess.turn());
   const inCheck = useMemo(() => chess.inCheck(), [chess]);
   const isCheckmate = useMemo(() => chess.isCheckmate(), [chess]);
-
-  console.log(selectedPiece?.square);
 
   const possibleMoves = useMemo(
     () => chess.moves({ verbose: true, square: selectedPiece?.square }),
@@ -36,8 +33,7 @@ const ChessBoard = () => {
 
   const handleClick = useCallback(
     (rowIndex: number, colIndex: number) => {
-      console.log(rowIndex, colIndex);
-      const square = invertedBoard[rowIndex][colIndex];
+      const square = board[rowIndex][colIndex];
       if (square && square.color === turn) {
         setSelectedPiece(square);
       } else {
@@ -55,10 +51,8 @@ const ChessBoard = () => {
         }
       }
     },
-    [chess, invertedBoard, possibleMoves, selectedPiece?.square, turn]
+    [board, chess, possibleMoves, selectedPiece?.square, turn]
   );
-
-  console.log(invertedBoard);
 
   return (
     <>
@@ -71,49 +65,45 @@ const ChessBoard = () => {
         </Text>
       </Billboard>
 
-      {invertedBoard.map((row, rowIndex) => {
-        console.log(row);
-        return row.map((piece, colIndex) => {
-          console.log(piece?.square, rowIndex, colIndex);
-          return (
-            <>
-              <Square
-                key={`${rowIndex}-${colIndex}`}
-                position={[colIndex, 0, rowIndex]}
-                color={rowIndex % 2 === colIndex % 2 ? "white" : "green"}
+      {board.map((row, rowIndex) =>
+        row.map((piece, colIndex) => (
+          <>
+            <Square
+              key={`${rowIndex}-${colIndex}`}
+              position={[colIndex, 0, rowIndex]}
+              color={rowIndex % 2 === colIndex % 2 ? "white" : "green"}
+              onClick={
+                selectedPiece
+                  ? () => handleClick(rowIndex, colIndex)
+                  : undefined
+              }
+              isSelected={Boolean(
+                selectedPiece &&
+                  selectedPiece.square === piece?.square &&
+                  selectedPiece.color === turn
+              )}
+              isPossibleDestination={Boolean(
+                selectedPiece &&
+                  possibleMoves.some(
+                    (m) => m.to === getToFromColAndRow(colIndex, rowIndex)
+                  )
+              )}
+            />
+            {piece && (
+              <ChessPiece
+                key={`${piece.color} - ${piece.square}`}
+                position={[colIndex, 0.5, rowIndex]}
+                color={PIECE_COLORS[piece.color]}
                 onClick={
-                  selectedPiece
+                  turn === piece.color
                     ? () => handleClick(rowIndex, colIndex)
                     : undefined
                 }
-                isSelected={Boolean(
-                  selectedPiece &&
-                    selectedPiece.square === piece?.square &&
-                    selectedPiece.color === turn
-                )}
-                isPossibleDestination={Boolean(
-                  selectedPiece &&
-                    possibleMoves.some(
-                      (m) => m.to === getToFromColAndRow(colIndex, rowIndex)
-                    )
-                )}
               />
-              {piece && (
-                <ChessPiece
-                  key={`${piece.color} - ${piece.square}`}
-                  position={[colIndex, 0.5, rowIndex]}
-                  color={PIECE_COLORS[piece.color]}
-                  onClick={
-                    turn === piece.color
-                      ? () => handleClick(rowIndex, colIndex)
-                      : undefined
-                  }
-                />
-              )}
-            </>
-          );
-        });
-      })}
+            )}
+          </>
+        ))
+      )}
     </>
   );
 };
