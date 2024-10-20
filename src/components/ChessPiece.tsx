@@ -1,5 +1,7 @@
 import React from "react";
 import { ThreeEvent, Vector3 } from "@react-three/fiber";
+import { useGLTF } from "@react-three/drei";
+import { Mesh, MeshStandardMaterial } from "three";
 
 interface ChessPieceProps {
   position: Vector3;
@@ -7,12 +9,23 @@ interface ChessPieceProps {
   onClick?: ((event: ThreeEvent<MouseEvent>) => void) | undefined;
 }
 
-// Create a chess piece placeholder (cube)
 export const ChessPiece = ({ position, color, onClick }: ChessPieceProps) => {
+  const { scene } = useGLTF("/3d-models/peter_ganine_classic_king.glb");
+  const clonedScene = scene.clone(true);
+  clonedScene.traverse((child) => {
+    if (child instanceof Mesh) {
+      child.material = new MeshStandardMaterial({
+        color: color,
+      });
+    }
+  });
   return (
-    <mesh position={position} onClick={onClick}>
-      <boxGeometry args={[0.8, 0.8, 0.8]} />
-      <meshStandardMaterial color={color} />
-    </mesh>
+    <group onClick={onClick}>
+      <primitive
+        object={clonedScene}
+        position={position}
+        scale={[0.015, 0.015, 0.015]}
+      />
+    </group>
   );
 };

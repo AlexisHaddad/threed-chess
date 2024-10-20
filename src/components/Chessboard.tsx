@@ -60,13 +60,13 @@ const ChessBoard = () => {
 
   return (
     <>
-      <Billboard follow position={[4, 7, 3]}>
-        <Text fontSize={0.5} anchorX="center" anchorY="middle">
+      <Billboard follow position={[4, 6, 3]}>
+        <Text color="black" fontSize={0.5} anchorX="center" anchorY="middle">
           {turn === "w" ? "White's turn" : "Black's turn"}
         </Text>
       </Billboard>
-      <Billboard follow position={[4, 6.5, 3]}>
-        <Text fontSize={0.2} anchorX="center" anchorY="middle">
+      <Billboard follow position={[4, 5.5, 3]}>
+        <Text color="black" fontSize={0.2} anchorX="center" anchorY="middle">
           {history
             .map((move, index) =>
               index % 2 === 0 ? `${index / 2 + 1}. ${move}` : move
@@ -75,8 +75,8 @@ const ChessBoard = () => {
         </Text>
       </Billboard>
       {(isCheckmate || inCheck) && (
-        <Billboard follow position={[4, 5.5, 3]}>
-          <Text fontSize={0.5} anchorX="center" anchorY="middle">
+        <Billboard follow position={[4, 4.5, 3]}>
+          <Text color="black" fontSize={0.5} anchorX="center" anchorY="middle">
             {isCheckmate ? "Checkmate!" : inCheck ? "Check!" : ""}
           </Text>
         </Billboard>
@@ -109,7 +109,7 @@ const ChessBoard = () => {
             {piece && (
               <ChessPiece
                 key={`${piece.color} - ${piece.square}`}
-                position={[colIndex, 0.5, rowIndex]}
+                position={[colIndex, 0.1, rowIndex]}
                 color={PIECE_COLORS[piece.color]}
                 onClick={
                   turn === piece.color
